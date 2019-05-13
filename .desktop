@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Helper
+Comment=Unipro UGENE is a cross-platform visual environment for DNA and protein sequence analysis.
+Exec=/home/user/qtproj/build-test-Desktop_Qt_5_12_2_GCC_64bit-Release/test
+Path=/home/user/qtproj/build-test-Desktop_Qt_5_12_2_GCC_64bit-Release/
+Icon=/home/user/qtproj/build-test-Desktop_Qt_5_12_2_GCC_64bit-Release/launcher48.png
+Terminal=false
+Type=Application
+Categories=Utility;
+Name[ru]=Helper
