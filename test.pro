@@ -26,12 +26,14 @@ CONFIG += c++11
 
 SOURCES += \
     dialogadd.cpp \
+    iconlist.cpp \
     main.cpp \
     mainwindow.cpp \
     dataset.cpp
 
 HEADERS += \
     dialogadd.h \
+    iconlist.h \
     mainwindow.h \
     dataset.h
 

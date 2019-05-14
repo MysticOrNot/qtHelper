@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "iconlist.h"
+
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include <QShortcut>
@@ -23,11 +25,14 @@ public:
     void nameChange();
     void toItem(QString s);
     void slotShortcut();
+    void topicListChange(int currItem);
+    int getCurrTopicIndex();
     QString toClipboard(QString s);
     QString getCurrentTag();
+    IconList icon;
 private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-    void on_pushButton_released();
+    void on_toolButton_released();
 private:
     Ui::MainWindow *ui;
     DialogAdd *dialogForm;

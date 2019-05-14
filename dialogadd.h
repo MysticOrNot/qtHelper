@@ -13,13 +13,15 @@ class DialogAdd : public QWidget
 
 public:
     QObject *pr;
+    void setTopic(QString str);
     explicit DialogAdd(QWidget *parent = nullptr);
     ~DialogAdd();
 private slots:
     void on_addBtn_released();
-
+    void showEvent( QShowEvent* event ) override;
 private:
     Ui::DialogAdd *ui;
+    QString startTopic;
 };
 
 #endif // DIALOGADD_H

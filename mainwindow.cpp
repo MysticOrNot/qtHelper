@@ -44,6 +44,7 @@ class MyDelegate : public QStyledItemDelegate  {
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     dataset(*new DataSet(QDir::currentPath())),
+    icon(*new IconList(QDir::currentPath())),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -53,15 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ui->listWidget->setItemDelegate(new MyDelegate(this->ui->listWidget));
 
-    QList<QString> names = this->dataset.getUniqueNames();
-    for (int i = 0; i < names.length(); i++)
-    {
-       this->ui->comboBox->addItem(names[i]);
-    }
-
-
+    topicListChange(0);
     nameChange();
-
 
     connect(this->ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [=](){
@@ -97,6 +91,7 @@ void MainWindow::nameChange(){
 
 MainWindow::~MainWindow()
 {
+    delete dialogForm;
     delete ui;
 }
 
@@ -127,6 +122,29 @@ void MainWindow::toItem(QString s){
     this->ui->listWidget->addItem(item);
 }
 
+void MainWindow::topicListChange(int currItem)
+{
+    ui->comboBox->blockSignals(true);
+    ui->comboBox->clear();
+
+    QList<QString> names = this->dataset.getUniqueNames();
+    for (int i = 0; i < names.length(); i++)
+    {
+       this->ui->comboBox->addItem(
+                    this->icon.getIcon(names[i]),
+                    names[i]
+       );
+    }
+    this->ui->comboBox->setCurrentIndex(currItem);
+
+    ui->comboBox->blockSignals(false);
+}
+
+int MainWindow::getCurrTopicIndex()
+{
+    return this->ui->comboBox->currentIndex();
+}
+
 QString MainWindow::toClipboard(QString s){
     int i = s.indexOf('\n');
     if (i < 0) return s;
@@ -139,15 +157,8 @@ QString MainWindow::toClipboard(QString s){
 QString MainWindow::getCurrentTag()
 {
     return this->ui->comboBox->itemText(
-                this->ui->comboBox->currentIndex()
+                getCurrTopicIndex()
     );
-}
-
-
-void MainWindow::on_pushButton_released()
-{
-    dialogForm->setWindowTitle("Добавление команды для " + getCurrentTag());
-    dialogForm->show();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -163,4 +174,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
     } else {
         event->accept();
     }*/
+}
+
+void MainWindow::on_toolButton_released()
+{
+    dialogForm->setWindowTitle("Добавление команды для " + getCurrentTag());
+    dialogForm->setTopic(getCurrentTag());
+    dialogForm->show();
 }
