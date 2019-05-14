@@ -1,4 +1,4 @@
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
+![](https://github.com/MysticOrNot/qtHelper/blob/master/icons/samples.png?raw=true)
 
 #### формат хранения команд
 >названиеПриложения=описаниеКоманды:команда
