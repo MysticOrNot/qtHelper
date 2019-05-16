@@ -29,13 +29,15 @@ SOURCES += \
     iconlist.cpp \
     main.cpp \
     mainwindow.cpp \
-    dataset.cpp
+    dataset.cpp \
+    xorcrypt.cpp
 
 HEADERS += \
     dialogadd.h \
     iconlist.h \
     mainwindow.h \
-    dataset.h
+    dataset.h \
+    xorcrypt.h
 
 FORMS += \
         dialogadd.ui \

@@ -9,8 +9,10 @@
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QStyledItemDelegate>
+#include <QInputDialog>
 #include "dataset.h"
 #include "dialogadd.h"
+#include "xorcrypt.h"
 
 class MyDelegate : public QStyledItemDelegate  {
     public:

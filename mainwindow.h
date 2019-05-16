@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "iconlist.h"
+#include "xorcrypt.h"
 
 #include <QMainWindow>
 #include <QListWidgetItem>
