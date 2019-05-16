@@ -22,22 +22,22 @@ void XorCrypt::Xor(QByteArray& arr)
 
 void XorCrypt::requestPass(QString defPass)
 {
-    bool ok;
-    QString passw = QInputDialog::getText(
-                nullptr,
-                QInputDialog::tr("QInputDialog::getText()"),
-                QInputDialog::tr("Password:"),
-                QLineEdit::Normal,
-                "Пароль для расшифровки",
-                &ok
-    );
+    QInputDialog inputDialog;
 
-    if (ok && passw.size() > 7){
-        this->key = passw.toUtf8();
-    }
-    else{
-        this->key = defPass.toUtf8();
-    }
+    inputDialog.setMinimumWidth(200);
+    inputDialog.resize(inputDialog.size());
+    inputDialog.setWindowTitle("Пароль для расшифровки");
+    inputDialog.setLabelText("Пароль:");
+    inputDialog.setTextValue("");
+    inputDialog.setTextEchoMode(QLineEdit::Normal);
+
+    bool ok = !!inputDialog.exec();
+    QString passw = inputDialog.textValue();
+
+    if (ok && passw.size() > 7)
+         this->key = passw.toUtf8();
+    else
+         this->key = defPass.toUtf8();
 }
 
 QString XorCrypt::Ecrypt(QString Text)
