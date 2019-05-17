@@ -24,12 +24,14 @@ void XorCrypt::requestPass(QString defPass)
 {
     QInputDialog inputDialog;
 
-    inputDialog.setMinimumWidth(200);
-    inputDialog.resize(inputDialog.size());
+    inputDialog.setMinimumWidth(150);
+    QSize newSize = inputDialog.size();
+    newSize.setWidth(270);
+    inputDialog.resize(newSize);
     inputDialog.setWindowTitle("Пароль для расшифровки");
     inputDialog.setLabelText("Пароль:");
     inputDialog.setTextValue("");
-    inputDialog.setTextEchoMode(QLineEdit::Normal);
+    inputDialog.setTextEchoMode(QLineEdit::Password);
 
     bool ok = !!inputDialog.exec();
     QString passw = inputDialog.textValue();
