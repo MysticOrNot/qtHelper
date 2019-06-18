@@ -10,12 +10,18 @@
 #include <QKeyEvent>
 #include <QStyledItemDelegate>
 #include <QInputDialog>
+#include <QAction>
 #include "dataset.h"
 #include "dialogadd.h"
 #include "xorcrypt.h"
+#include "GlobalActionHelper.h"
+#include <X11/Xlib.h>
+#include <X11/extensions/XTest.h>
+#include <X11/keysym.h>
 
 class MyDelegate : public QStyledItemDelegate  {
     public:
+    QPen hotKey = QColor("#ADFF2F");
     QPen penDescr = QColor("#999999");
     QPen penCommand = QColor("#336699");
     MyDelegate(QObject *parent=0) : QStyledItemDelegate (parent){}
@@ -28,12 +34,23 @@ class MyDelegate : public QStyledItemDelegate  {
 
         QString title = index.data(Qt::DisplayRole).toString();
         QString description = index.data(Qt::UserRole + 1).toString();
+        int row = index.row();
+        int deltaX = 0;
+        QRect r = option.rect.adjusted(2, 2, 2, 2);
 
-        QRect r = option.rect.adjusted(0, 0, 0, 0);
+        if (row >=0 && row <=9){
+
+            painter->setPen(hotKey);
+            if (row == 9) row = 0;
+            else row += 1;
+            painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignLeft, "Ctrl+" + QString::number(row) + ": ", &r);
+            r = option.rect.adjusted(60, 2, 2, 2);
+        }
+
         painter->setPen(penDescr);
-        painter->drawText(r.left(), r.top(), r.width(), r.height(),Qt::AlignLeft, title, &r);
+        painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignLeft, title, &r);
 
-        r = option.rect.adjusted(0, 20, 0, 0);
+        r = option.rect.adjusted(2, 20, 2, 2);
         painter->setPen(penCommand);
         painter->drawText(r.left(), r.top(), r.width(), r.height(), Qt::AlignLeft, description, &r);
     }
@@ -56,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ui->listWidget->setItemDelegate(new MyDelegate(this->ui->listWidget));
 
+    initPasteKeys();
     topicListChange(0);
     nameChange();
 
@@ -63,6 +81,17 @@ MainWindow::MainWindow(QWidget *parent) :
         [=](){
          nameChange();
     });
+
+    // горячие клавиши Ctrl + [0 - 9]
+    GlobalActionHelper::init ();
+    for (int i = 0; i < 10; i++) {
+        globalAction[i] = new QAction(this);
+        globalAction[i]->setShortcut(QKeySequence ("Ctrl+" + QString::number(i)));
+        connect(globalAction[i], &QAction::triggered, [=](){
+          hotKeyPressed(i);
+        });
+        GlobalActionHelper::makeGlobal (globalAction[i]);
+    }
 }
 
 void MainWindow::showMsg(QString msg){
@@ -178,9 +207,76 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }*/
 }
 
+void MainWindow::initPasteKeys()
+{
+    Display *display;
+    display=XOpenDisplay(NULL);
+
+    controlKey = XKeysymToKeycode(display, XK_Control_L);
+    shiftKey   = XKeysymToKeycode(display, XK_Shift_L);
+    insertKey  = XKeysymToKeycode(display, XK_Insert);
+    vKey       = XKeysymToKeycode(display, XK_V);
+
+    firstKey = controlKey;
+    lastKey  = vKey;
+
+    XCloseDisplay(display);
+}
+
 void MainWindow::on_toolButton_released()
 {
     dialogForm->setWindowTitle("Добавление команды для " + getCurrentTag());
     dialogForm->setTopic(getCurrentTag());
     dialogForm->show();
+}
+
+void MainWindow::hotKeyPressed(int i)
+{
+    if ((i >=0) && (i < this->ui->listWidget->count())){
+        int item = i;
+
+        if (item == 0){
+            if (this->ui->listWidget->count() >= 10) item = 10;
+            else return;
+        }
+
+        this->ui->listWidget->setCurrentRow(item - 1);
+
+        Display *display;
+        display=XOpenDisplay(NULL);
+        unsigned int currKey    = XKeysymToKeycode(display, 48 + i);
+
+
+
+        XTestFakeKeyEvent(display, controlKey,  False, CurrentTime);
+        XTestFakeKeyEvent(display, currKey,     False, CurrentTime);
+        XFlush(display);
+
+        XTestFakeKeyEvent(display, firstKey,  True, CurrentTime);
+        XTestFakeKeyEvent(display, lastKey,   True, CurrentTime);
+        XTestFakeKeyEvent(display, lastKey,   False, CurrentTime);
+        XTestFakeKeyEvent(display, firstKey,  False, CurrentTime);
+        XFlush(display);
+
+        XCloseDisplay(display);
+
+    }
+}
+
+void MainWindow::on_pasteBtn_released()
+{
+    if (this->ui->pasteBtn->isFlat()){
+        this->ui->pasteBtn->setFlat(false);
+        this->ui->pasteBtn->setText("Ctrl+V");
+
+        firstKey = controlKey;
+        lastKey  = vKey;
+    }
+    else{
+        this->ui->pasteBtn->setFlat(true);
+        this->ui->pasteBtn->setText("Shift+Ins");
+
+        firstKey = shiftKey;
+        lastKey  = insertKey;
+    }
 }

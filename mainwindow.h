@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include "iconlist.h"
@@ -33,11 +33,25 @@ public:
     IconList icon;
 private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-    void on_toolButton_released();
+    void on_toolButton_released();    
+    void hotKeyPressed(int i);
+    void on_pushButton_released();
+    void on_pasteBtn_pressed();
+
+    void on_pasteBtn_released();
+
 private:
     Ui::MainWindow *ui;
-    DialogAdd *dialogForm;
+    DialogAdd *dialogForm;    
+    QAction *globalAction[10];
     void closeEvent (QCloseEvent *event) override;
+    unsigned int controlKey;
+    unsigned int shiftKey;
+    unsigned int insertKey;
+    unsigned int vKey;
+    unsigned int firstKey;
+    unsigned int lastKey;
+    void initPasteKeys();
 };
 
 #endif // MAINWINDOW_H

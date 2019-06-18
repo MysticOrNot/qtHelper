@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    GlobalActionHelper.cpp \
     dialogadd.cpp \
     iconlist.cpp \
     main.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
     xorcrypt.cpp
 
 HEADERS += \
+    GlobalActionHelper.h \
     dialogadd.h \
     iconlist.h \
     mainwindow.h \
@@ -47,3 +49,8 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+linux{
+QT+=x11extras
+LIBS+=-lXtst -lX11
+}
