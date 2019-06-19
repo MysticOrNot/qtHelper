@@ -73,6 +73,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ui->listWidget->setItemDelegate(new MyDelegate(this->ui->listWidget));
 
+    this->ui->pasteBtn->setStyleSheet("color: white;"
+                            "background-color: #336699;");
+
     initPasteKeys();
     topicListChange(0);
     nameChange();
@@ -243,8 +246,10 @@ void MainWindow::hotKeyPressed(int i)
         this->ui->listWidget->setCurrentRow(item - 1);
 
         Display *display;
-        display=XOpenDisplay(NULL);
-        unsigned int currKey    = XKeysymToKeycode(display, 48 + i);
+        display=XOpenDisplay(nullptr);
+
+        unsigned long currKey = 0x0030 + i;
+        currKey = XKeysymToKeycode(display, currKey);
 
 
 
@@ -252,10 +257,14 @@ void MainWindow::hotKeyPressed(int i)
         XTestFakeKeyEvent(display, currKey,     False, CurrentTime);
         XFlush(display);
 
+        if (pasteMode == 2) XTestFakeKeyEvent(display, shiftKey,  True, CurrentTime);
+
         XTestFakeKeyEvent(display, firstKey,  True, CurrentTime);
         XTestFakeKeyEvent(display, lastKey,   True, CurrentTime);
         XTestFakeKeyEvent(display, lastKey,   False, CurrentTime);
         XTestFakeKeyEvent(display, firstKey,  False, CurrentTime);
+
+        if (pasteMode == 2) XTestFakeKeyEvent(display, shiftKey,  False, CurrentTime);
         XFlush(display);
 
         XCloseDisplay(display);
@@ -265,18 +274,29 @@ void MainWindow::hotKeyPressed(int i)
 
 void MainWindow::on_pasteBtn_released()
 {
-    if (this->ui->pasteBtn->isFlat()){
-        this->ui->pasteBtn->setFlat(false);
-        this->ui->pasteBtn->setText("Ctrl+V");
+    pasteMode++;
+    if (pasteMode > 2){
+            pasteMode = 0;
+    }
 
+    switch (pasteMode) {
+    case 0:
         firstKey = controlKey;
         lastKey  = vKey;
-    }
-    else{
-        this->ui->pasteBtn->setFlat(true);
-        this->ui->pasteBtn->setText("Shift+Ins");
-
+        this->ui->pasteBtn->setText("Ctrl+V");
+        this->ui->pasteBtn->setStyleSheet("color: white; background-color: #336699;");
+        break;
+    case 1:
         firstKey = shiftKey;
         lastKey  = insertKey;
+        this->ui->pasteBtn->setText("Shift+Ins");
+        this->ui->pasteBtn->setStyleSheet("color: white; background-color: #996633;");
+        break;
+    case 2:
+        firstKey = controlKey;
+        lastKey  = vKey;
+        this->ui->pasteBtn->setText("Terminal");
+        this->ui->pasteBtn->setStyleSheet("color: white; background-color: #339966;");
+        break;
     }
 }

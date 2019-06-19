@@ -35,9 +35,6 @@ private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void on_toolButton_released();    
     void hotKeyPressed(int i);
-    void on_pushButton_released();
-    void on_pasteBtn_pressed();
-
     void on_pasteBtn_released();
 
 private:
@@ -52,6 +49,7 @@ private:
     unsigned int firstKey;
     unsigned int lastKey;
     void initPasteKeys();
+    unsigned int pasteMode = 0;
 };
 
 #endif // MAINWINDOW_H
